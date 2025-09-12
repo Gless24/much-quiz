@@ -3,56 +3,146 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MUCH · Quiz Interactivo (Planetario)</title>
+  <title>MUCH · Quiz Interactivo</title>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
+    /* ====== Paleta Agencia: Turquesa + Fucsia ====== */
     :root{
-      --bg-grad: linear-gradient(135deg,#e0f2fe 0%, #fef9c3 45%, #fde68a 100%);
-      --pill-bg:#e0f2fe; --pill-tx:#075985;
+      /* Colores base */
+      --turquesa-50:#ecfeff; --turquesa-100:#cffafe; --turquesa-200:#a5f3fc;
+      --turquesa-300:#67e8f9; --turquesa-400:#22d3ee; --turquesa-500:#06b6d4;
+      --turquesa-600:#0891b2; --turquesa-700:#0e7490;
+
+      --fucsia-50:#fdf4ff; --fucsia-100:#fae8ff; --fucsia-200:#f5d0fe;
+      --fucsia-300:#f0abfc; --fucsia-400:#e879f9; --fucsia-500:#d946ef;
+      --fucsia-600:#c026d3; --fucsia-700:#a21caf;
+
+      --gris-100:#f3f4f6; --gris-200:#e5e7eb; --gris-300:#d1d5db;
+      --gris-400:#9ca3af; --gris-500:#6b7280; --gris-600:#4b5563; --gris-700:#374151;
+
+      /* Identidad */
+      --turquesa: var(--turquesa-500);
+      --fucsia: var(--fucsia-500);
+
+      /* Fondo general con marca */
+      --bg-grad: radial-gradient(1200px 800px at 10% 0% , rgba(6,182,212,.25) 0%, transparent 60%),
+                 radial-gradient(1000px 800px at 90% 0% , rgba(217,70,239,.22) 0%, transparent 60%),
+                 linear-gradient(135deg, #e6fffb 0%, #fff1ff 45%, #fff 100%);
+
+      /* Pills / Badges */
+      --pill-bg: color-mix(in srgb, var(--turquesa) 12%, white);
+      --pill-tx: var(--turquesa-700);
+
+      /* Tarjetas y sombras */
+      --card-bg:#fff;
+      --card-br:24px;
+      --shadow-soft: 0 10px 30px rgba(2,6,23,.12);
+      --shadow-hover: 0 16px 36px rgba(2,6,23,.18);
     }
+
+    /* ====== Layout ====== */
     body{
       background: var(--bg-grad);
       min-height:100svh; display:flex; align-items:center; justify-content:center; padding:20px;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
     .app-card{
-      background:#fff; border-radius:24px; box-shadow: 0 10px 30px rgba(2,6,23,.12);
-      width:min(980px, 100%); padding: clamp(16px, 3vw, 28px);
+      background:var(--card-bg); border-radius:var(--card-br); box-shadow: var(--shadow-soft);
+      width:min(980px, 100%); padding: clamp(16px, 3vw, 28px); position: relative; overflow:hidden;
+      border: 1px solid color-mix(in srgb, var(--turquesa) 8%, #fff);
     }
-    .logo{ width:56px; height:56px; border-radius:14px; display:grid; place-items:center; background:var(--pill-bg); font-size:28px; color:#0b3b2e; }
-    .pill{ background:var(--pill-bg); color:var(--pill-tx); font-weight:700; border-radius:999px; padding:.4rem .75rem; }
 
-    .question-card{ background:#fafafa; border:1px solid #ececec; border-radius:18px; padding:16px; }
+    /* Acento decorativo en card */
+    .app-card::before{
+      content:""; position:absolute; inset:auto 0 0 0; height:6px;
+      background: linear-gradient(90deg, var(--turquesa), var(--fucsia));
+    }
+
+    /* ====== Header / Pills ====== */
+    .logo img{ height:56px; border-radius:12px; box-shadow: 0 6px 18px rgba(6,182,212,.2); }
+    .pill{ background:var(--pill-bg); color:var(--pill-tx); font-weight:800; border-radius:999px; padding:.45rem .9rem; border:1px solid color-mix(in srgb, var(--turquesa) 18%, white); }
+    .tiny{ font-size:.92rem; color:var(--gris-600) }
+
+    /* ====== Progreso / Timer ====== */
+    .progress{ height:10px; background: #eef2ff; border-radius:999px; }
+    #bar{
+      background: linear-gradient(90deg, var(--turquesa) 0%, var(--fucsia) 100%);
+      box-shadow: 0 0 0 2px #fff inset;
+    }
+
+    /* ====== Preguntas / Opciones ====== */
+    .question-card{
+      background:#ffffff; border:1px solid var(--gris-200); border-radius:18px; padding:16px;
+      box-shadow: 0 8px 24px rgba(6,182,212,.08);
+    }
     .option-btn{
       border:2px solid transparent; text-align:left; padding:16px; border-radius:16px; background:#fff;
-      transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease;
+      transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
       box-shadow: 0 4px 12px rgba(2,6,23,.05); width:100%;
     }
-    .option-btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 20px rgba(2,6,23,.10); }
-    .option-btn.correct{ border-color:#22c55e; background:#ecfdf5; }
-    .option-btn.incorrect{ border-color:#ef4444; background:#fef2f2; }
-    .option-btn:disabled{ opacity:.9; cursor:not-allowed; }
+    .option-btn:hover{
+      transform: translateY(-1px); box-shadow: var(--shadow-hover);
+      border-color: color-mix(in srgb, var(--fucsia) 55%, var(--turquesa) 45%);
+      background: linear-gradient(0deg, rgba(6,182,212,.05), rgba(217,70,239,.05));
+    }
+    .option-btn:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--turquesa) 25%, white);
+      border-color: var(--turquesa);
+    }
+    .option-btn.correct{
+      border-color: var(--turquesa); background: color-mix(in srgb, var(--turquesa) 12%, white);
+    }
+    .option-btn.incorrect{
+      border-color: var(--fucsia); background: color-mix(in srgb, var(--fucsia) 10%, white);
+    }
+    .option-btn:disabled{ opacity:.95; cursor:not-allowed; }
     .emoji{ font-size:22px; width:32px; display:inline-flex; justify-content:center; align-items:center; margin-right:8px; }
-    .tiny{ font-size:.92rem; color:#6b7280 }
 
-    /* Confeti */
+    /* ====== Botones (override Bootstrap) ====== */
+    .btn-primary{
+      --bs-btn-bg: var(--fucsia); --bs-btn-border-color: var(--fucsia);
+      --bs-btn-hover-bg: var(--fucsia-600); --bs-btn-hover-border-color: var(--fucsia-600);
+      --bs-btn-focus-shadow-rgb: 217,70,239;
+    }
+    .btn-success{
+      --bs-btn-bg: var(--turquesa); --bs-btn-border-color: var(--turquesa);
+      --bs-btn-hover-bg: var(--turquesa-600); --bs-btn-hover-border-color: var(--turquesa-600);
+      --bs-btn-focus-shadow-rgb: 6,182,212;
+    }
+    .btn-outline-secondary{
+      --bs-btn-color: var(--turquesa-700); --bs-btn-border-color: var(--turquesa-300);
+      --bs-btn-hover-bg: var(--turquesa-100); --bs-btn-hover-border-color: var(--turquesa-400);
+    }
+    .badge.text-bg-primary{
+      background: linear-gradient(90deg, var(--turquesa-600), var(--fucsia-600));
+    }
+
+    /* ====== Confeti ====== */
     .confetti-canvas{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
 
-    /* Ticket (modal) */
+    /* ====== Ticket (modal) ====== */
     .ticket{
-      border:2px dashed #334155; border-radius:18px; padding:16px;
+      border:2px dashed var(--gris-300); border-radius:18px; padding:16px;
       background:
         radial-gradient(12px 12px at 0 50%, transparent 12px, #fff 13px) left center / 24px 24px repeat-y,
         radial-gradient(12px 12px at 100% 50%, transparent 12px, #fff 13px) right center / 24px 24px repeat-y,
         linear-gradient(#fff,#fff);
+      box-shadow: 0 12px 28px rgba(31,165,166,.12);
     }
-    .ticket-title{ font-weight:800; letter-spacing:.4px }
+    .ticket-title{ font-weight:900; letter-spacing:.3px; color: var(--fucsia); }
     .ticket-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .ticket-badge{ background:#eef2ff; color:#1e3a8a; border-radius:10px; padding:6px 10px; font-weight:700 }
-    .print-note{ font-size:.85rem; color:#64748b }
+    .ticket-badge{ background:var(--turquesa-100); color:var(--turquesa-700); border-radius:10px; padding:6px 10px; font-weight:800 }
+    .print-note{ font-size:.85rem; color:var(--gris-500) }
+
+    /* Sutileza en modal header */
+    .modal-content{
+      border:1px solid color-mix(in srgb, var(--fucsia) 10%, white);
+      box-shadow: 0 16px 40px rgba(162,28,175,.15);
+    }
   </style>
 </head>
 <body>
@@ -62,10 +152,12 @@
   <main class="app-card">
     <!-- Header -->
     <div class="d-flex align-items-center gap-3 flex-wrap mb-2">
-      <div class="logo">🐆</div>
+      <div id="logoEmoji" class="logo">
+        <img src="LOGO AGENCIA 1_Mesa de trabajo 1.png" alt="Agencia Digital Chiapas">
+      </div>
       <div class="flex-grow-1">
         <h1 class="h4 mb-1">MUCH · Quiz Interactivo</h1>
-        <p class="tiny mb-0">Responde, aprende y ¡gana una entrada al Planetario! 🎁</p>
+        <p class="tiny mb-0">Responde, aprende y ¡gana tu entrada! 🎁</p>
       </div>
       <div id="pillSala" class="pill">Sala: —</div>
     </div>
@@ -74,7 +166,7 @@
     <div class="d-flex align-items-center justify-content-between mt-2 mb-2">
       <div class="w-100 me-3">
         <div class="progress" role="progressbar" aria-label="Progreso" aria-valuemin="0" aria-valuemax="100">
-          <div id="bar" class="progress-bar bg-success" style="width:0%"></div>
+          <div id="bar" class="progress-bar" style="width:0%"></div>
         </div>
       </div>
       <div class="form-check form-switch">
@@ -134,28 +226,28 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header border-0">
-          <h5 class="modal-title">🎟️ Boleto Digital – Planetario MUCH</h5>
+          <h5 class="modal-title">🎟️ Boleto Digital</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body pt-0">
           <div class="ticket">
             <div class="d-flex justify-content-between align-items-center">
-              <div class="ticket-title">MUCH · Planetario</div>
+              <div class="ticket-title">MUCH</div>
               <span class="ticket-badge" id="ticketFolio">Folio: —</span>
             </div>
             <hr>
             <div class="ticket-row"><strong>Beneficiario:</strong> <span id="ticketName">Visitante</span></div>
-            <div class="ticket-row"><strong>Acceso:</strong> General – 1 persona</div>
+            <div class="ticket-row" id="ticketAccess"><strong>Acceso:</strong> General – 1 persona</div>
             <div class="ticket-row"><strong>Validez:</strong> <span id="ticketDate">—</span> (solo hoy)</div>
-            <div class="ticket-row"><strong>Ubicación:</strong> Planetario MUCH</div>
+            <div class="ticket-row" id="ticketPlace"><strong>Ubicación:</strong> —</div>
             <div class="ticket-row"><strong>Nota:</strong> Presenta este boleto en taquilla. Sujeto a disponibilidad y horarios del museo.</div>
           </div>
           <p class="print-note mt-2">Sugerencia: guarda o imprime este boleto. El folio es único.</p>
         </div>
         <div class="modal-footer border-0">
           <input id="nick" type="text" class="form-control" placeholder="Tu nombre/apodo para el boleto (opcional)" />
-          <button id="saveNameBtn" class="btn btn-outline-primary">Actualizar nombre</button>
-          <button id="printBtn" class="btn btn-primary">🖨️ Imprimir</button>
+          <button id="saveNameBtn" class="btn btn-outline-secondary">Actualizar nombre</button>
+          <button id="printBtn" class="btn btn-success">🖨️ Imprimir</button>
         </div>
       </div>
     </div>
@@ -164,263 +256,341 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    /*** Parámetros de URL para mostrar sala ***/
+  <!-- Script del Quiz -->
+  <script type="module">
+    /* =================== Datos =================== */
     const params = new URLSearchParams(location.search);
     const SALA = params.get('sala') || 'Exploración';
-    document.getElementById('pillSala').textContent = `Sala: ${SALA}`;
 
-    /*** Banco de preguntas (verifica datos oficiales del MUCH/ZooMAT) ***/
     const BANK = [
-      { text:'📅 ¿En qué año se inauguró el MUCH (Museo Chiapas)?', desc:'Confirma con información oficial del museo.',
-        options:['1994','2003','2010','2015'], correctIndex:1, points:10 }, // AJUSTA si aplica
-      { text:'📍 ¿En qué ciudad se encuentra el MUCH?', desc:'Pista: capital del estado de Chiapas.',
-        options:['San Cristóbal de las Casas','Tuxtla Gutiérrez','Tapachula','Comitán'], correctIndex:1, points:10 },
-      { text:'🎭 ¿Qué fiesta tradicional de Chiapas tiene a los “Parachicos”?', desc:'Se celebra en Chiapa de Corzo.',
-        options:['Fiesta Grande de Chiapa de Corzo','Carnaval de Veracruz','Guelaguetza','Noche de Rábanos'], correctIndex:0, points:10 },
-      { text:'🦁 ¿Cuál es el nombre del zoológico emblemático de Chiapas?', desc:'Referente en conservación de fauna local.',
-        options:['Zoo de Tuxtla','ZooMAT (Miguel Álvarez del Toro)','Zoo Maya','Zoológico Lacantún'], correctIndex:1, points:10 },
-      { text:'🐆 ¿Qué especie emblemática habita en la Selva Lacandona?', desc:'Felino grande y con manchas.',
-        options:['Puma','Jaguar','Ocelote','Lince'], correctIndex:1, points:10 },
-      { text:'🏞️ ¿Qué lugar es famoso por su cañón y su presa en Chiapas?', desc:'Un ícono natural del estado.',
-        options:['Cañón del Sumidero','Agua Azul','El Chiflón','Montebello'], correctIndex:0, points:10 },
-      { text:'🔭 ¿Qué actividad ofrece el Planetario del MUCH?', desc:'Está relacionada con el cielo y la ciencia.',
-        options:['Exhibición de fósiles','Proyecciones astronómicas','Recorridos subterráneos','Jardín botánico'], correctIndex:1, points:10 },
-      { text:'🎶 ¿Qué instrumento identifica la música tradicional chiapaneca?', desc:'Suele escucharse en plazas y festividades.',
-        options:['Marimba','Arpa','Piano','Saxofón'], correctIndex:0, points:10 },
-      { text:'📚 ¿Cuál es un objetivo del MUCH?', desc:'Piensa en educación y cultura.',
-        options:['Ser un centro deportivo','Difundir ciencia y cultura con experiencias interactivas','Solo resguardar fósiles','Vender artesanías'], correctIndex:1, points:10 },
-      { text:'🦋 ¿Qué atractivo natural es famoso por su color azul turquesa?', desc:'Cascadas muy visitadas.',
-        options:['Cascadas de Agua Azul','Hierve el Agua','Sótano de las Golondrinas','Siete Luminarias'], correctIndex:0, points:10 },
-      { text:'🏛️ ¿El MUCH combina ciencia con…?', desc:'También promueve el patrimonio local.',
-        options:['Cocina internacional','Cultura y tecnología','Turismo extremo','Artes marciales'], correctIndex:1, points:10 },
-      { text:'🌳 ¿El ZooMAT destaca principalmente por…?', desc:'Conservación de fauna nativa en su hábitat.',
-        options:['Acuarios gigantes','Especies del Ártico','Fauna regional y conservación','Safari africano'], correctIndex:2, points:10 },
-    ];
+  { text:'📅 ¿En qué año se inauguró el Museo Chiapas (MUCH)?',
+    options:['1994','2003','2010','2015'], correctIndex:1, points:10 },
+
+  { text:'🐆 ¿Cuál es el felino más grande que vive en Chiapas?',
+    options:['Jaguar','Puma','Ocelote','León'], correctIndex:0, points:10 },
+
+  { text:'🐢 ¿Qué animal vive en los ríos y lagunas de Chiapas?',
+    options:['Cocodrilo','Delfín','Foca','Tiburón'], correctIndex:0, points:10 },
+
+  { text:'🕊️ ¿Dónde vive principalmente el quetzal en Chiapas?',
+    options:['Bosque de niebla','Desierto','Pradera','Sabana'], correctIndex:0, points:10 },
+
+  { text:'🏛️ ¿Qué zona arqueológica es famosa por sus murales de colores?',
+    options:['Bonampak','Palenque','Toniná','Chichén Itzá'], correctIndex:0, points:10 },
+
+  { text:'🌲 ¿En qué reserva natural se pueden ver quetzales?',
+    options:['El Triunfo','La Sepultura','La Encrucijada','El Pinacate'], correctIndex:0, points:10 },
+
+  { text:'🏔️ ¿Cuál es el volcán más alto de Chiapas?',
+    options:['Tacaná','Popocatépetl','Nevado de Toluca','Malinche'], correctIndex:0, points:10 },
+
+  { text:'🌊 ¿Cómo se llama el lugar famoso por sus lagos de colores verde y azul?',
+    options:['Lagos de Montebello','Bacalar','Xochimilco','Lagunas de Zempoala'], correctIndex:0, points:10 },
+
+  { text:'🦧 ¿Qué tipo de mono vive en la Selva Lacandona?',
+    options:['Mono araña','Mono titi','Mono ardilla','Mono capuchino'], correctIndex:0, points:10 },
+
+  { text:'🎶 ¿Con qué instrumento musical se identifica a Chiapas?',
+    options:['Marimba','Guitarra','Tambor','Piano'], correctIndex:0, points:10 },
+
+  { text:'🎉 ¿Cómo se llama la fiesta tradicional de Chiapa de Corzo reconocida por la UNESCO?',
+    options:['Parachicos','Guelaguetza','Carnaval de Veracruz','Danza de los Viejitos'], correctIndex:0, points:10 },
+
+  { text:'☕ ¿Qué producto de Chiapas es famoso en todo el mundo?',
+    options:['Café','Vino','Cacao','Té'], correctIndex:0, points:10 },
+
+  { text:'🗣️ ¿Qué lengua indígena se habla mucho en Los Altos de Chiapas?',
+    options:['Tsotsil','Nahuatl','Maya','Zapoteco'], correctIndex:0, points:10 },
+
+  { text:'💧 ¿Qué cañón es un símbolo de Chiapas y tiene un gran río?',
+    options:['Cañón del Sumidero','Cañón del Colorado','Barranca del Cobre','Cañón de Fernández'], correctIndex:0, points:10 },
+
+  { text:'🏛️ ¿Qué gobernante maya de Palenque fue enterrado en el Templo de las Inscripciones?',
+    options:['Moctezuma','Pakal el Grande','Kukulkán','Yax Kuk Mo'], correctIndex:1, points:10 },
+
+  { text:'🏺 ¿Qué zona arqueológica de Chiapas fue rival de Palenque y es famosa por sus esculturas de piedra?',
+    options:['Toniná','Bonampak','Izapa','Uxmal'], correctIndex:0, points:10 },
+
+  { text:'🦅 ¿Qué ave rapaz gigante puede encontrarse en selvas de Chiapas?',
+    options:['Águila pescadora','Águila harpía','Águila real','Cóndor'], correctIndex:1, points:10 },
+
+  { text:'🪶 ¿Qué ave parecida a un pavo está en peligro en Chiapas?',
+    options:['Pava cojolita','Guajolote común','Chachalaca','Pato silvestre'], correctIndex:0, points:10 },
+
+  { text:'⚡ ¿Qué presa hidroeléctrica del río Grijalva está junto al Cañón del Sumidero?',
+    options:['Chicoasén','La Angostura','Malpaso','Peñitas'], correctIndex:0, points:10 },
+
+  { text:'💧 ¿Qué reserva natural costera de Chiapas es famosa por sus manglares?',
+    options:['La Encrucijada','El Vizcaíno','Calakmul','Sian Kaan'], correctIndex:0, points:10 },
+
+  { text:'🌸 ¿Qué familia de plantas es la más diversa en las selvas de Chiapas?',
+    options:['Orquídeas','Margaritas','Pastos','Cactus'], correctIndex:0, points:10 },
+
+  { text:'🌐 ¿Qué tecnología usan los planetarios modernos para mostrar imágenes en la cúpula?',
+    options:['Fulldome 360°','Televisión','Proyector plano','Holograma'], correctIndex:0, points:10 },
+
+  { text:'🗓️ ¿En qué año la Fiesta Grande de Chiapa de Corzo (Parachicos) fue reconocida por la UNESCO?',
+    options:['2001','2010','2015','2020'], correctIndex:1, points:10 },
+
+  { text:'🗣️ Además del tsotsil, ¿qué otra lengua maya se habla mucho en Chiapas?',
+    options:['Tseltal','Zapoteco','Rarámuri','Mixteco'], correctIndex:0, points:10 },
+
+{ text:'🦚 Ave que se consideraba extinta en Chiapas, con plumas largas de color turquesa:',
+  options:['Guacamaya','Quetzal','Tucán','Loro'],
+  correctIndex:1, points:10 },
+
+{ text:'🐆 ¿Qué significa la palabra "BALAM" en español?',
+  options:['Puma','Jaguar','León','Tigre'],
+  correctIndex:1, points:10 },
+
+];
+
 
     const NUM_QUESTIONS = 6;
-
-    function shuffle(arr){
-      const a = [...arr];
-      for(let i=a.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
+    const shuffle = a => a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
     const QUESTIONS = shuffle(BANK).slice(0, NUM_QUESTIONS);
 
-    /*** Estado y elementos ***/
-    const state = { idx:0, selected:null, points:0, correct:0, locked:false, answers:[] };
-
-    const bar = document.getElementById('bar');
-    const qIndex = document.getElementById('qIndex');
-    const qTotal = document.getElementById('qTotal');
-    const qText = document.getElementById('qText');
-    const qDesc = document.getElementById('qDesc');
-    const options = document.getElementById('options');
-    const status = document.getElementById('status');
-    const nextBtn = document.getElementById('nextBtn');
-    const pointsEl = document.getElementById('points');
-    const hintEl = document.getElementById('hint');
-
-    const finalView = document.getElementById('finalView');
-    const quizView  = document.getElementById('quizView');
-    const finalPoints = document.getElementById('finalPoints');
-    const finalCorrect= document.getElementById('finalCorrect');
-    const finalTotal  = document.getElementById('finalTotal');
-    const finalMsg    = document.getElementById('finalMsg');
-    const finalTitle  = document.getElementById('finalTitle');
-    const giftRow     = document.getElementById('giftRow');
-    const retryRow    = document.getElementById('retryRow');
-    const openTicketBtn = document.getElementById('openTicketBtn');
-    const playAgainBtn1 = document.getElementById('playAgainBtn1');
-    const playAgainBtn2 = document.getElementById('playAgainBtn2');
-    const soundToggle = document.getElementById('soundToggle');
-
-    // Modal & ticket elems
-    const ticketModal = new bootstrap.Modal(document.getElementById('ticketModal'));
-    const ticketFolio = document.getElementById('ticketFolio');
-    const ticketDate  = document.getElementById('ticketDate');
-    const ticketName  = document.getElementById('ticketName');
-    const nick        = document.getElementById('nick');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const printBtn    = document.getElementById('printBtn');
-
-    qTotal.textContent = QUESTIONS.length.toString();
-    render();
-
-    nextBtn.addEventListener('click', next);
-    openTicketBtn.addEventListener('click', openTicket);
-    playAgainBtn1.addEventListener('click', ()=> location.reload());
-    playAgainBtn2.addEventListener('click', ()=> location.reload());
-    saveNameBtn.addEventListener('click', ()=> {
-      ticketName.textContent = nick.value.trim() ? nick.value.trim() : 'Visitante';
-    });
-    printBtn.addEventListener('click', ()=> window.print());
-
-    // Reloj simple
-    (function tick(){
-      const t = new Date();
-      const hh = String(t.getHours()).padStart(2,'0');
-      const mm = String(t.getMinutes()).padStart(2,'0');
-      document.getElementById('timer').textContent = `⏰ ${hh}:${mm}`;
-      setTimeout(tick, 10_000);
-    })();
-
-    /*** Sonidos WebAudio ***/
-    let audioCtx;
-    function beep(freq=880, dur=0.15, type='sine', vol=0.08){
-      if(!soundToggle.checked) return;
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = type; o.frequency.value = freq;
-      g.gain.value = vol; o.connect(g); g.connect(audioCtx.destination);
-      o.start();
-      setTimeout(()=>o.stop(), dur*1000);
-    }
-    function soundCorrect(){ beep(880,.12,'sine',.08); setTimeout(()=>beep(1320,.12,'sine',.07),130); }
-    function soundWrong(){ beep(200,.18,'sawtooth',.07); }
-
-    /*** Confeti simple ***/
-    const confettiCanvas = document.getElementById('confetti');
-    const cctx = confettiCanvas.getContext('2d');
-    function sizeCanvas(){ confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
-    addEventListener('resize', sizeCanvas); sizeCanvas();
-    let confettiPieces = [];
-    function launchConfetti(count=120){
-      for(let i=0;i<count;i++){
-        confettiPieces.push({
-          x: Math.random()*confettiCanvas.width, y: -10,
-          r: 4+Math.random()*4, speedY: 2+Math.random()*3, speedX: -2+Math.random()*4,
-          rot: Math.random()*Math.PI*2
-        });
+    /* =================== Clases =================== */
+    class SoundFX {
+      constructor(toggleEl){ this.toggleEl = toggleEl; this.ctx = null; }
+      beep(freq=880, dur=0.15, type='sine', vol=0.08){
+        if(!this.toggleEl.checked) return;
+        this.ctx = this.ctx || new (window.AudioContext||window.webkitAudioContext)();
+        const o=this.ctx.createOscillator(), g=this.ctx.createGain();
+        o.type=type; o.frequency.value=freq; g.gain.value=vol;
+        o.connect(g); g.connect(this.ctx.destination); o.start();
+        setTimeout(()=>o.stop(), dur*1000);
       }
+      correct(){ this.beep(880,.12,'sine',.08); setTimeout(()=>this.beep(1320,.12,'sine',.07),130); }
+      wrong(){ this.beep(200,.18,'sawtooth',.07); }
     }
-    (function confettiLoop(){
-      requestAnimationFrame(confettiLoop);
-      cctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
-      confettiPieces.forEach(p=>{
-        p.x += p.speedX; p.y += p.speedY; p.rot += 0.05;
-        cctx.save(); cctx.translate(p.x,p.y); cctx.rotate(p.rot);
-        cctx.fillStyle = ['#22c55e','#3b82f6','#f59e0b','#ef4444','#eab308'][p.r|0 % 5];
-        cctx.fillRect(-p.r,-p.r,p.r*2,p.r*2); cctx.restore();
-      });
-      confettiPieces = confettiPieces.filter(p => p.y < confettiCanvas.height + 20);
-    })();
 
-    function render(){
-      const progress = (state.idx / QUESTIONS.length) * 100;
-      bar.style.width = progress + '%';
-
-      if (state.idx >= QUESTIONS.length){
-        quizView.classList.add('d-none');
-        finalView.classList.remove('d-none');
-
-        finalPoints.textContent = state.points.toString();
-        finalCorrect.textContent = state.correct.toString();
-        finalTotal.textContent   = QUESTIONS.length.toString();
-
-        const allCorrect = state.correct === QUESTIONS.length;
-        if (allCorrect){
-          finalTitle.textContent = '¡Perfecto! 🎉';
-          finalMsg.textContent   = '¡Te has ganado una entrada gratis al Planetario! Presiona el botón para ver tu boleto digital.';
-          giftRow.classList.remove('d-none');
-          retryRow.classList.add('d-none');
-          launchConfetti(200);
-          soundCorrect();
-        } else {
-          finalTitle.textContent = 'Buen intento 👀';
-          finalMsg.textContent   = 'Parece que necesitas visitar el MUCH para descubrir más. ¡Explora el museo y vuelve a intentarlo!';
-          giftRow.classList.add('d-none');
-          retryRow.classList.remove('d-none');
+    class Confetti {
+      constructor(canvas){
+        this.canvas = canvas; this.ctx = canvas.getContext('2d');
+        this.pieces=[]; this.resize(); addEventListener('resize', ()=>this.resize());
+        this.loop();
+      }
+      resize(){ this.canvas.width = innerWidth; this.canvas.height = innerHeight; }
+      launch(n=120){
+        for(let i=0;i<n;i++){
+          this.pieces.push({
+            x: Math.random()*this.canvas.width, y:-10, r:4+Math.random()*4,
+            vy:2+Math.random()*3, vx:-2+Math.random()*4, rot:Math.random()*Math.PI*2
+          });
         }
-        return;
+      }
+      loop(){
+        requestAnimationFrame(()=>this.loop());
+        const {ctx,canvas}=this; ctx.clearRect(0,0,canvas.width,canvas.height);
+        this.pieces.forEach(p=>{
+          p.x+=p.vx; p.y+=p.vy; p.rot+=0.05;
+          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+          /* Colores marca: turquesa + fucsia + acentos */
+          const palette = ['#06b6d4','#0891b2','#d946ef','#a21caf','#22d3ee','#f0abfc'];
+          ctx.fillStyle = palette[(p.r|0) % palette.length];
+          ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2); ctx.restore();
+        });
+        this.pieces = this.pieces.filter(p=>p.y<canvas.height+20);
+      }
+    }
+
+    class PrizeManager {
+      constructor(){
+        this.PRIZES = [
+          { key:'museo',      title:'MUCH · Museo',      label:'Entrada al Museo MUCH',                    lugar:'Museo Chiapas (MUCH)', emoji:'🏛️' },
+          { key:'planetario', title:'MUCH · Planetario', label:'Entrada al Planetario MUCH',               lugar:'Planetario MUCH',      emoji:'🔭' },
+          { key:'zoomat',     title:'ZooMAT',            label:'Entrada al Zoológico Miguel Álvarez del Toro', lugar:'ZooMAT',            emoji:'🐆' },
+        ];
+      }
+      random(){ return this.PRIZES[Math.floor(Math.random()*this.PRIZES.length)]; }
+    }
+
+    class TicketManager {
+      constructor({modalEl, folioEl, dateEl, nameEl, nickEl, saveBtn, printBtn, titleEls, accessEl, ubicacionEl, headerLogoEl}){
+        this.modal = new bootstrap.Modal(modalEl);
+        this.folioEl=folioEl; this.dateEl=dateEl; this.nameEl=nameEl;
+        this.nickEl=nickEl; this.saveBtn=saveBtn; this.printBtn=printBtn;
+        this.titleEls = titleEls;
+        this.accessEl = accessEl;
+        this.ubicacionEl = ubicacionEl;
+        this.headerLogoEl = headerLogoEl;
+        this.currentPrize = null;
+
+        this.saveBtn.addEventListener('click', ()=> this.updateName());
+        this.printBtn.addEventListener('click', ()=> window.print());
       }
 
-      const q = QUESTIONS[state.idx];
-      qIndex.textContent = (state.idx + 1).toString();
-      qText.textContent  = q.text;
-      qDesc.textContent  = q.desc || '';
+      setPrize(prize){
+        this.currentPrize = prize;
+        const folio = 'MUCH-' + Math.random().toString(36).substring(2,8).toUpperCase();
+        this.folioEl.textContent = 'Folio: ' + folio;
+        const now = new Date();
+        this.dateEl.textContent = new Intl.DateTimeFormat('es-MX',{dateStyle:'long'}).format(now);
 
-      status.textContent = '';
-      options.innerHTML  = '';
-      state.selected = null;
-      state.locked = false;
-
-      q.options.forEach((label, i)=>{
-        const col = document.createElement('div');
-        col.className = 'col-12 col-md-6';
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'option-btn';
-        btn.setAttribute('data-index', i);
-        btn.innerHTML = `<span class="emoji">🔹</span><span>${label}</span>`;
-        btn.addEventListener('click', ()=> choose(i));
-
-        col.appendChild(btn);
-        options.appendChild(col);
-      });
-
-      nextBtn.textContent = state.idx === QUESTIONS.length - 1 ? 'Finalizar 🎉' : 'Siguiente ➡️';
-      pointsEl.textContent = state.points.toString();
-      document.getElementById('hint').textContent = 'Tip: solo puedes elegir una respuesta';
-    }
-
-    function choose(i){
-      if (state.locked) return;
-      state.locked = true;
-      state.selected = i;
-
-      const q = QUESTIONS[state.idx];
-      const correctIdx = q.correctIndex;
-
-      [...options.querySelectorAll('.option-btn')].forEach((btn, idx)=>{
-        btn.disabled = true;
-        btn.classList.remove('correct','incorrect');
-        if (idx === correctIdx) btn.classList.add('correct');
-        if (idx === i && i !== correctIdx) btn.classList.add('incorrect');
-      });
-
-      if (i === correctIdx){
-        status.textContent = '✅ ¡Correcto!';
-        state.points += q.points;
-        state.correct += 1;
-        soundCorrect(); launchConfetti(40);
-      } else {
-        status.textContent = '❌ ¡Casi! Sigue intentando';
-        soundWrong();
+        this.titleEls.forEach(el => el.textContent = `${prize.emoji} ${prize.title}`);
+        this.accessEl.innerHTML    = `<strong>Acceso:</strong> ${prize.label}`;
+        this.ubicacionEl.innerHTML = `<strong>Ubicación:</strong> ${prize.lugar}`;
+        if (this.headerLogoEl) this.headerLogoEl.textContent = prize.emoji;
       }
 
-      state.answers.push({
-        qIndex: state.idx, question: q.text, choice: q.options[i], correct: i === correctIdx
-      });
-    }
-
-    function next(){
-      if (state.selected === null){
-        status.textContent = '⚠️ Selecciona una respuesta para continuar.';
-        return;
+      updateName(){
+        this.nameEl.textContent = this.nickEl.value.trim() ? this.nickEl.value.trim() : 'Visitante';
       }
-      state.idx += 1;
-      render();
+
+      open(){
+        if(!this.currentPrize) return;
+        this.updateName();
+        this.modal.show();
+      }
     }
 
-    // Ticket
-    function openTicket(){
-      const folio = 'MUCH-' + Math.random().toString(36).substring(2,8).toUpperCase();
-      ticketFolio.textContent = 'Folio: ' + folio;
+    class UIManager {
+      constructor({elements, sound, confetti, ticket, prizeMgr}){
+        this.e = elements; this.sound = sound; this.confetti = confetti; this.ticket = ticket; this.prizeMgr = prizeMgr;
+        this.state = { idx:0, selected:null, points:0, correct:0, locked:false, answers:[] };
+        this.e.pillSala.textContent = `Sala: ${SALA}`;
+        this.e.qTotal.textContent = QUESTIONS.length.toString();
+        this.bind(); this.render(); this.clock();
+      }
+      bind(){
+        this.e.nextBtn.addEventListener('click', ()=> this.next());
+        this.e.openTicketBtn.addEventListener('click', ()=> this.ticket.open());
+        this.e.playAgainBtn1.addEventListener('click', ()=> location.reload());
+        this.e.playAgainBtn2.addEventListener('click', ()=> location.reload());
+      }
+      clock(){
+        const tick=()=>{
+          const t=new Date(), hh=String(t.getHours()).padStart(2,'0'), mm=String(t.getMinutes()).padStart(2,'0');
+          this.e.timer.textContent = `⏰ ${hh}:${mm}`;
+          setTimeout(tick, 10_000);
+        }; tick();
+      }
+      render(){
+        const s=this.state, {e}=this;
+        e.bar.style.width = (s.idx/QUESTIONS.length*100)+'%';
 
-      const now = new Date();
-      const f = new Intl.DateTimeFormat('es-MX', { dateStyle: 'long' }).format(now);
-      ticketDate.textContent = f;
+        if(s.idx>=QUESTIONS.length){
+          e.quizView.classList.add('d-none');
+          e.finalView.classList.remove('d-none');
+          e.finalPoints.textContent = s.points.toString();
+          e.finalCorrect.textContent= s.correct.toString();
+          e.finalTotal.textContent  = QUESTIONS.length.toString();
 
-      ticketName.textContent = nick.value.trim() ? nick.value.trim() : 'Visitante';
+          const allCorrect = s.correct===QUESTIONS.length;
+          if(allCorrect){
+            const prize = this.prizeMgr.random();
+            this.ticket.setPrize(prize);
+            e.finalTitle.textContent = '¡Perfecto! 🎉';
+            e.finalMsg.textContent   = `¡Te ganaste una ${prize.label}! Presiona el botón para ver tu boleto digital.`;
+            e.giftRow.classList.remove('d-none');
+            e.retryRow.classList.add('d-none');
+            this.confetti.launch(200); this.sound.correct();
+          } else {
+            e.finalTitle.textContent = 'Buen intento 👀';
+            e.finalMsg.textContent   = 'Explora el MUCH y vuelve a intentarlo.';
+            e.giftRow.classList.add('d-none');
+            e.retryRow.classList.remove('d-none');
+          }
+          return;
+        }
 
-      ticketModal.show();
+        const q = QUESTIONS[s.idx];
+        e.qIndex.textContent = (s.idx+1).toString();
+        e.qText.textContent  = q.text;
+        e.qDesc.textContent  = q.desc || '';
+        e.status.textContent = '';
+        e.options.innerHTML  = '';
+        s.selected=null; s.locked=false;
+
+        q.options.forEach((label,i)=>{
+          const col=document.createElement('div'); col.className='col-12 col-md-6';
+          const btn=document.createElement('button'); btn.type='button'; btn.className='option-btn';
+          btn.setAttribute('data-index', i);
+          btn.innerHTML = `<span class="emoji">🔹</span><span>${label}</span>`;
+          btn.addEventListener('click', ()=> this.choose(i));
+          col.appendChild(btn); e.options.appendChild(col);
+        });
+
+        e.nextBtn.textContent = s.idx===QUESTIONS.length-1 ? 'Finalizar 🎉' : 'Siguiente ➡️';
+        e.pointsEl.textContent = s.points.toString();
+        e.hint.textContent = 'Tip: solo puedes elegir una respuesta';
+      }
+      choose(i){
+        const s=this.state, {e}=this;
+        if(s.locked) return; s.locked=true; s.selected=i;
+        const q=QUESTIONS[s.idx], correctIdx=q.correctIndex;
+        [...e.options.querySelectorAll('.option-btn')].forEach((btn,idx)=>{
+          btn.disabled=true; btn.classList.remove('correct','incorrect');
+          if(idx===correctIdx) btn.classList.add('correct');
+          if(idx===i && i!==correctIdx) btn.classList.add('incorrect');
+        });
+        if(i===correctIdx){
+          e.status.textContent='✅ ¡Correcto!';
+          s.points+=q.points; s.correct+=1;
+          this.sound.correct(); this.confetti.launch(40);
+        } else {
+          e.status.textContent='❌ ¡Casi! Sigue intentando';
+          this.sound.wrong();
+        }
+        s.answers.push({ qIndex:s.idx, question:q.text, choice:q.options[i], correct:i===correctIdx });
+      }
+      next(){
+        const s=this.state, {e}=this;
+        if(s.selected===null){ e.status.textContent='⚠️ Selecciona una respuesta para continuar.'; return; }
+        s.idx+=1; this.render();
+      }
     }
+
+    /* =================== Instanciación =================== */
+    const elements = {
+      pillSala: document.getElementById('pillSala'),
+      bar: document.getElementById('bar'),
+      timer: document.getElementById('timer'),
+      quizView: document.getElementById('quizView'),
+      finalView: document.getElementById('finalView'),
+      qIndex: document.getElementById('qIndex'),
+      qTotal: document.getElementById('qTotal'),
+      qText: document.getElementById('qText'),
+      qDesc: document.getElementById('qDesc'),
+      options: document.getElementById('options'),
+      status: document.getElementById('status'),
+      nextBtn: document.getElementById('nextBtn'),
+      pointsEl: document.getElementById('points'),
+      hint: document.getElementById('hint'),
+      finalTitle: document.getElementById('finalTitle'),
+      finalMsg: document.getElementById('finalMsg'),
+      finalPoints: document.getElementById('finalPoints'),
+      finalCorrect: document.getElementById('finalCorrect'),
+      finalTotal: document.getElementById('finalTotal'),
+      giftRow: document.getElementById('giftRow'),
+      retryRow: document.getElementById('retryRow'),
+      openTicketBtn: document.getElementById('openTicketBtn'),
+      playAgainBtn1: document.getElementById('playAgainBtn1'),
+      playAgainBtn2: document.getElementById('playAgainBtn2'),
+      soundToggle: document.getElementById('soundToggle'),
+    };
+
+    const sound    = new SoundFX(elements.soundToggle);
+    const confetti = new Confetti(document.getElementById('confetti'));
+    const prizeMgr = new PrizeManager();
+
+    const ticket = new TicketManager({
+      modalEl: document.getElementById('ticketModal'),
+      folioEl: document.getElementById('ticketFolio'),
+      dateEl:  document.getElementById('ticketDate'),
+      nameEl:  document.getElementById('ticketName'),
+      nickEl:  document.getElementById('nick'),
+      saveBtn: document.getElementById('saveNameBtn'),
+      printBtn:document.getElementById('printBtn'),
+      titleEls:[ document.querySelector('#ticketModal .modal-title'),
+                 document.querySelector('.ticket .ticket-title') ],
+      accessEl:    document.getElementById('ticketAccess'),
+      ubicacionEl: document.getElementById('ticketPlace'),
+      headerLogoEl:document.getElementById('logoEmoji'),
+    });
+
+    new UIManager({ elements, sound, confetti, ticket, prizeMgr });
   </script>
 </body>
 </html>
