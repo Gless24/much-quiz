@@ -11,6 +11,10 @@
   <style>
     /* ====== Paleta Agencia: Turquesa + Fucsia ====== */
     :root{
+      /* Si quieres foto de fondo, descomenta y ajusta: */
+      /* --bg-image-url: url("fondo-agen.jpg");
+         --bg-image-opacity: .35; */
+
       /* Colores base */
       --turquesa-50:#ecfeff; --turquesa-100:#cffafe; --turquesa-200:#a5f3fc;
       --turquesa-300:#67e8f9; --turquesa-400:#22d3ee; --turquesa-500:#06b6d4;
@@ -43,88 +47,76 @@
       --shadow-hover: 0 16px 36px rgba(2,6,23,.18);
     }
 
-    /* ====== Layout ====== */
-    body{
-      background: var(--bg-grad);
-      min-height:100svh; display:flex; align-items:center; justify-content:center; padding:20px;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    /* ====== Capa de imagen de fondo (opcional) ====== */
+    .bg-stack{ position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .bg-stack::before{
+      content:""; position:absolute; inset:0;
+      background-image: var(--bg-image-url);
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      mix-blend-mode: soft-light; 
+      opacity: var(--bg-image-opacity);
+      filter: saturate(1.05) contrast(1.05) brightness(.95);
+      will-change: opacity, transform;
     }
+    @media (prefers-contrast: more){ .bg-stack::before{ opacity: .25; } }
+
+    /* ====== Layout global ====== */
+    body{
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0ea5b9, #ec4899, #38bdf8, #f472b6);
+      background-size: 400% 400%;
+      animation: gradientMove 25s ease infinite;
+      position: relative; overflow: hidden;
+    }
+    @keyframes gradientMove{ 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+
+    .app-card{ z-index: 1; }
+
+    /* ====== Carta (quiz) ====== */
     .app-card{
-      background:var(--card-bg); border-radius:var(--card-br); box-shadow: var(--shadow-soft);
-      width:min(980px, 100%); padding: clamp(16px, 3vw, 28px); position: relative; overflow:hidden;
+      position: relative;
+      background: var(--card-bg, rgba(255,255,255,0.10));
+      border-radius: var(--card-br, 16px);
+      box-shadow: var(--shadow-soft);
+      width: min(860px, 100%);
+      padding: clamp(18px, 3.2vw, 32px);
       border: 1px solid color-mix(in srgb, var(--turquesa) 8%, #fff);
     }
-
-    /* Acento decorativo en card */
     .app-card::before{
       content:""; position:absolute; inset:auto 0 0 0; height:6px;
       background: linear-gradient(90deg, var(--turquesa), var(--fucsia));
     }
 
-    /* ====== Header / Pills ====== */
     .logo img{ height:56px; border-radius:12px; box-shadow: 0 6px 18px rgba(6,182,212,.2); }
     .pill{ background:var(--pill-bg); color:var(--pill-tx); font-weight:800; border-radius:999px; padding:.45rem .9rem; border:1px solid color-mix(in srgb, var(--turquesa) 18%, white); }
     .tiny{ font-size:.92rem; color:var(--gris-600) }
 
-    /* ====== Progreso / Timer ====== */
     .progress{ height:10px; background: #eef2ff; border-radius:999px; }
-    #bar{
-      background: linear-gradient(90deg, var(--turquesa) 0%, var(--fucsia) 100%);
-      box-shadow: 0 0 0 2px #fff inset;
-    }
+    #bar{ background: linear-gradient(90deg, var(--turquesa) 0%, var(--fucsia) 100%); box-shadow: 0 0 0 2px #fff inset; }
 
-    /* ====== Preguntas / Opciones ====== */
-    .question-card{
-      background:#ffffff; border:1px solid var(--gris-200); border-radius:18px; padding:16px;
-      box-shadow: 0 8px 24px rgba(6,182,212,.08);
-    }
+    .question-card{ background:#ffffff; border:1px solid var(--gris-200); border-radius:18px; padding:16px; box-shadow: 0 8px 24px rgba(6,182,212,.08); }
     .option-btn{
       border:2px solid transparent; text-align:left; padding:16px; border-radius:16px; background:#fff;
       transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
       box-shadow: 0 4px 12px rgba(2,6,23,.05); width:100%;
     }
-    .option-btn:hover{
-      transform: translateY(-1px); box-shadow: var(--shadow-hover);
-      border-color: color-mix(in srgb, var(--fucsia) 55%, var(--turquesa) 45%);
-      background: linear-gradient(0deg, rgba(6,182,212,.05), rgba(217,70,239,.05));
-    }
-    .option-btn:focus-visible{
-      outline: none;
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--turquesa) 25%, white);
-      border-color: var(--turquesa);
-    }
-    .option-btn.correct{
-      border-color: var(--turquesa); background: color-mix(in srgb, var(--turquesa) 12%, white);
-    }
-    .option-btn.incorrect{
-      border-color: var(--fucsia); background: color-mix(in srgb, var(--fucsia) 10%, white);
-    }
+    .option-btn:hover{ transform: translateY(-1px); box-shadow: var(--shadow-hover); border-color: color-mix(in srgb, var(--fucsia) 55%, var(--turquesa) 45%); background: linear-gradient(0deg, rgba(6,182,212,.05), rgba(217,70,239,.05)); }
+    .option-btn:focus-visible{ outline: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--turquesa) 25%, white); border-color: var(--turquesa); }
+    .option-btn.correct{ border-color: var(--turquesa); background: color-mix(in srgb, var(--turquesa) 12%, white); }
+    .option-btn.incorrect{ border-color: var(--fucsia); background: color-mix(in srgb, var(--fucsia) 10%, white); }
     .option-btn:disabled{ opacity:.95; cursor:not-allowed; }
     .emoji{ font-size:22px; width:32px; display:inline-flex; justify-content:center; align-items:center; margin-right:8px; }
 
-    /* ====== Botones (override Bootstrap) ====== */
-    .btn-primary{
-      --bs-btn-bg: var(--fucsia); --bs-btn-border-color: var(--fucsia);
-      --bs-btn-hover-bg: var(--fucsia-600); --bs-btn-hover-border-color: var(--fucsia-600);
-      --bs-btn-focus-shadow-rgb: 217,70,239;
-    }
-    .btn-success{
-      --bs-btn-bg: var(--turquesa); --bs-btn-border-color: var(--turquesa);
-      --bs-btn-hover-bg: var(--turquesa-600); --bs-btn-hover-border-color: var(--turquesa-600);
-      --bs-btn-focus-shadow-rgb: 6,182,212;
-    }
-    .btn-outline-secondary{
-      --bs-btn-color: var(--turquesa-700); --bs-btn-border-color: var(--turquesa-300);
-      --bs-btn-hover-bg: var(--turquesa-100); --bs-btn-hover-border-color: var(--turquesa-400);
-    }
-    .badge.text-bg-primary{
-      background: linear-gradient(90deg, var(--turquesa-600), var(--fucsia-600));
-    }
+    .btn-primary{ --bs-btn-bg: var(--fucsia); --bs-btn-border-color: var(--fucsia); --bs-btn-hover-bg: var(--fucsia-600); --bs-btn-hover-border-color: var(--fucsia-600); --bs-btn-focus-shadow-rgb: 217,70,239; }
+    .btn-success{ --bs-btn-bg: var(--turquesa); --bs-btn-border-color: var(--turquesa); --bs-btn-hover-bg: var(--turquesa-600); --bs-btn-hover-border-color: var(--turquesa-600); --bs-btn-focus-shadow-rgb: 6,182,212; }
+    .btn-outline-secondary{ --bs-btn-color: var(--turquesa-700); --bs-btn-border-color: var(--turquesa-300); --bs-btn-hover-bg: var(--turquesa-100); --bs-btn-hover-border-color: var(--turquesa-400); }
+    .badge.text-bg-primary{ background: linear-gradient(90deg, var(--turquesa-600), var(--fucsia-600)); }
 
-    /* ====== Confeti ====== */
     .confetti-canvas{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
 
-    /* ====== Ticket (modal) ====== */
     .ticket{
       border:2px dashed var(--gris-300); border-radius:18px; padding:16px;
       background:
@@ -137,19 +129,41 @@
     .ticket-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .ticket-badge{ background:var(--turquesa-100); color:var(--turquesa-700); border-radius:10px; padding:6px 10px; font-weight:800 }
     .print-note{ font-size:.85rem; color:var(--gris-500) }
+    .modal-content{ border:1px solid color-mix(in srgb, var(--fucsia) 10%, white); box-shadow: 0 16px 40px rgba(162,28,175,.15); }
 
-    /* Sutileza en modal header */
-    .modal-content{
-      border:1px solid color-mix(in srgb, var(--fucsia) 10%, white);
-      box-shadow: 0 16px 40px rgba(162,28,175,.15);
+    /* ===== Bienvenida (portada) ===== */
+    .welcome{ width:min(900px, 100%); }
+    .banner{
+      background: linear-gradient(135deg,var(--turquesa),var(--fucsia));
+      color:#fff; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.15);
+      padding:clamp(22px,4vw,40px); text-align:center;
     }
+    .banner h1{ font-weight:900; font-size: clamp(28px, 5vw, 40px); margin:0 0 6px 0; }
+    .banner p{ margin:0 0 16px 0; font-weight:700; }
+    .banner .cta{ background:#fff; color:#0b1220; font-weight:900; border-radius:14px; padding:.9rem 1.3rem; text-decoration:none; display:inline-block; }
+    .hidden{ display:none !important; }
   </style>
 </head>
 <body>
+
+  <!-- Opcional si usas foto de fondo -->
+  <!-- <div class="bg-stack" aria-hidden="true"></div> -->
+
   <!-- Confeti -->
   <canvas id="confetti" class="confetti-canvas"></canvas>
 
-  <main class="app-card">
+  <!-- ====== Bienvenida (se muestra primero) ====== -->
+  <section id="welcome" class="welcome">
+    <div class="banner">
+      <img src="LOGO AGENCIA 1_Mesa de trabajo 1.png" alt="MUCH" style="height:58px; border-radius:12px; box-shadow:0 6px 18px rgba(6,182,212,.25)">
+      <h1>MUCH</h1>
+      <p>Aprende y gana premios 🎁</p>
+      <a href="#" id="startBtn" class="cta">🚀 Jugar ahora</a>
+    </div>
+  </section>
+
+  <!-- ====== Quiz ====== -->
+  <main id="quizShell" class="app-card hidden">
     <!-- Header -->
     <div class="d-flex align-items-center gap-3 flex-wrap mb-2">
       <div id="logoEmoji" class="logo">
@@ -263,95 +277,40 @@
     const SALA = params.get('sala') || 'Exploración';
 
     const BANK = [
-  { text:'📅 ¿En qué año se inauguró el Museo Chiapas (MUCH)?',
-    options:['1994','2003','2010','2015'], correctIndex:1, points:10 },
-
-  { text:'🐆 ¿Cuál es el felino más grande que vive en Chiapas?',
-    options:['Jaguar','Puma','Ocelote','León'], correctIndex:0, points:10 },
-
-  { text:'🐢 ¿Qué animal vive en los ríos y lagunas de Chiapas?',
-    options:['Cocodrilo','Delfín','Foca','Tiburón'], correctIndex:0, points:10 },
-
-  { text:'🕊️ ¿Dónde vive principalmente el quetzal en Chiapas?',
-    options:['Bosque de niebla','Desierto','Pradera','Sabana'], correctIndex:0, points:10 },
-
-  { text:'🏛️ ¿Qué zona arqueológica es famosa por sus murales de colores?',
-    options:['Bonampak','Palenque','Toniná','Chichén Itzá'], correctIndex:0, points:10 },
-
-  { text:'🌲 ¿En qué reserva natural se pueden ver quetzales?',
-    options:['El Triunfo','La Sepultura','La Encrucijada','El Pinacate'], correctIndex:0, points:10 },
-
-  { text:'🏔️ ¿Cuál es el volcán más alto de Chiapas?',
-    options:['Tacaná','Popocatépetl','Nevado de Toluca','Malinche'], correctIndex:0, points:10 },
-
-  { text:'🌊 ¿Cómo se llama el lugar famoso por sus lagos de colores verde y azul?',
-    options:['Lagos de Montebello','Bacalar','Xochimilco','Lagunas de Zempoala'], correctIndex:0, points:10 },
-
-  { text:'🦧 ¿Qué tipo de mono vive en la Selva Lacandona?',
-    options:['Mono araña','Mono titi','Mono ardilla','Mono capuchino'], correctIndex:0, points:10 },
-
-  { text:'🎶 ¿Con qué instrumento musical se identifica a Chiapas?',
-    options:['Marimba','Guitarra','Tambor','Piano'], correctIndex:0, points:10 },
-
-  { text:'🎉 ¿Cómo se llama la fiesta tradicional de Chiapa de Corzo reconocida por la UNESCO?',
-    options:['Parachicos','Guelaguetza','Carnaval de Veracruz','Danza de los Viejitos'], correctIndex:0, points:10 },
-
-  { text:'☕ ¿Qué producto de Chiapas es famoso en todo el mundo?',
-    options:['Café','Vino','Cacao','Té'], correctIndex:0, points:10 },
-
-  { text:'🗣️ ¿Qué lengua indígena se habla mucho en Los Altos de Chiapas?',
-    options:['Tsotsil','Nahuatl','Maya','Zapoteco'], correctIndex:0, points:10 },
-
-  { text:'💧 ¿Qué cañón es un símbolo de Chiapas y tiene un gran río?',
-    options:['Cañón del Sumidero','Cañón del Colorado','Barranca del Cobre','Cañón de Fernández'], correctIndex:0, points:10 },
-
-  { text:'🏛️ ¿Qué gobernante maya de Palenque fue enterrado en el Templo de las Inscripciones?',
-    options:['Moctezuma','Pakal el Grande','Kukulkán','Yax Kuk Mo'], correctIndex:1, points:10 },
-
-  { text:'🏺 ¿Qué zona arqueológica de Chiapas fue rival de Palenque y es famosa por sus esculturas de piedra?',
-    options:['Toniná','Bonampak','Izapa','Uxmal'], correctIndex:0, points:10 },
-
-  { text:'🦅 ¿Qué ave rapaz gigante puede encontrarse en selvas de Chiapas?',
-    options:['Águila pescadora','Águila harpía','Águila real','Cóndor'], correctIndex:1, points:10 },
-
-  { text:'🪶 ¿Qué ave parecida a un pavo está en peligro en Chiapas?',
-    options:['Pava cojolita','Guajolote común','Chachalaca','Pato silvestre'], correctIndex:0, points:10 },
-
-  { text:'⚡ ¿Qué presa hidroeléctrica del río Grijalva está junto al Cañón del Sumidero?',
-    options:['Chicoasén','La Angostura','Malpaso','Peñitas'], correctIndex:0, points:10 },
-
-  { text:'💧 ¿Qué reserva natural costera de Chiapas es famosa por sus manglares?',
-    options:['La Encrucijada','El Vizcaíno','Calakmul','Sian Kaan'], correctIndex:0, points:10 },
-
-  { text:'🌸 ¿Qué familia de plantas es la más diversa en las selvas de Chiapas?',
-    options:['Orquídeas','Margaritas','Pastos','Cactus'], correctIndex:0, points:10 },
-
-  { text:'🌐 ¿Qué tecnología usan los planetarios modernos para mostrar imágenes en la cúpula?',
-    options:['Fulldome 360°','Televisión','Proyector plano','Holograma'], correctIndex:0, points:10 },
-
-  { text:'🗓️ ¿En qué año la Fiesta Grande de Chiapa de Corzo (Parachicos) fue reconocida por la UNESCO?',
-    options:['2001','2010','2015','2020'], correctIndex:1, points:10 },
-
-  { text:'🗣️ Además del tsotsil, ¿qué otra lengua maya se habla mucho en Chiapas?',
-    options:['Tseltal','Zapoteco','Rarámuri','Mixteco'], correctIndex:0, points:10 },
-
-{ text:'🦚 Ave que se consideraba extinta en Chiapas, con plumas largas de color turquesa:',
-  options:['Guacamaya','Quetzal','Tucán','Loro'],
-  correctIndex:1, points:10 },
-
-{ text:'🐆 ¿Qué significa la palabra "BALAM" en español?',
-  options:['Puma','Jaguar','León','Tigre'],
-  correctIndex:1, points:10 },
-
-];
-
+      { text:'📅 ¿En qué año se inauguró el Museo Chiapas (MUCH)?', options:['1994','2003','2010','2015'], correctIndex:1, points:10 },
+      { text:'🐆 ¿Cuál es el felino más grande que vive en Chiapas?', options:['Jaguar','Puma','Ocelote','León'], correctIndex:0, points:10 },
+      { text:'🐢 ¿Qué animal vive en los ríos y lagunas de Chiapas?', options:['Cocodrilo','Delfín','Foca','Tiburón'], correctIndex:0, points:10 },
+      { text:'🕊️ ¿Dónde vive principalmente el quetzal en Chiapas?', options:['Bosque de niebla','Desierto','Pradera','Sabana'], correctIndex:0, points:10 },
+      { text:'🏛️ ¿Qué zona arqueológica es famosa por sus murales de colores?', options:['Bonampak','Palenque','Toniná','Chichén Itzá'], correctIndex:0, points:10 },
+      { text:'🌲 ¿En qué reserva natural se pueden ver quetzales?', options:['El Triunfo','La Sepultura','La Encrucijada','El Pinacate'], correctIndex:0, points:10 },
+      { text:'🏔️ ¿Cuál es el volcán más alto de Chiapas?', options:['Tacaná','Popocatépetl','Nevado de Toluca','Malinche'], correctIndex:0, points:10 },
+      { text:'🌊 ¿Cómo se llama el lugar famoso por sus lagos de colores verde y azul?', options:['Lagos de Montebello','Bacalar','Xochimilco','Lagunas de Zempoala'], correctIndex:0, points:10 },
+      { text:'🦧 ¿Qué tipo de mono vive en la Selva Lacandona?', options:['Mono araña','Mono titi','Mono ardilla','Mono capuchino'], correctIndex:0, points:10 },
+      { text:'🎶 ¿Con qué instrumento musical se identifica a Chiapas?', options:['Marimba','Guitarra','Tambor','Piano'], correctIndex:0, points:10 },
+      { text:'🎉 ¿Cómo se llama la fiesta tradicional de Chiapa de Corzo reconocida por la UNESCO?', options:['Parachicos','Guelaguetza','Carnaval de Veracruz','Danza de los Viejitos'], correctIndex:0, points:10 },
+      { text:'☕ ¿Qué producto de Chiapas es famoso en todo el mundo?', options:['Café','Vino','Cacao','Té'], correctIndex:0, points:10 },
+      { text:'🗣️ ¿Qué lengua indígena se habla mucho en Los Altos de Chiapas?', options:['Tsotsil','Nahuatl','Maya','Zapoteco'], correctIndex:0, points:10 },
+      { text:'💧 ¿Qué cañón es un símbolo de Chiapas y tiene un gran río?', options:['Cañón del Sumidero','Cañón del Colorado','Barranca del Cobre','Cañón de Fernández'], correctIndex:0, points:10 },
+      { text:'🏛️ ¿Qué gobernante maya de Palenque fue enterrado en el Templo de las Inscripciones?', options:['Moctezuma','Pakal el Grande','Kukulkán','Yax Kuk Mo'], correctIndex:1, points:10 },
+      { text:'🏺 ¿Qué zona arqueológica de Chiapas fue rival de Palenque y es famosa por sus esculturas de piedra?', options:['Toniná','Bonampak','Izapa','Uxmal'], correctIndex:0, points:10 },
+      { text:'🦅 ¿Qué ave rapaz gigante puede encontrarse en selvas de Chiapas?', options:['Águila pescadora','Águila harpía','Águila real','Cóndor'], correctIndex:1, points:10 },
+      { text:'🪶 ¿Qué ave parecida a un pavo está en peligro en Chiapas?', options:['Pava cojolita','Guajolote común','Chachalaca','Pato silvestre'], correctIndex:0, points:10 },
+      { text:'⚡ ¿Qué presa hidroeléctrica del río Grijalva está junto al Cañón del Sumidero?', options:['Chicoasén','La Angostura','Malpaso','Peñitas'], correctIndex:0, points:10 },
+      { text:'💧 ¿Qué reserva natural costera de Chiapas es famosa por sus manglares?', options:['La Encrucijada','El Vizcaíno','Calakmul','Sian Kaan'], correctIndex:0, points:10 },
+      { text:'🌸 ¿Qué familia de plantas es la más diversa en las selvas de Chiapas?', options:['Orquídeas Silvestres','Margaritas','Pastos','Cactus'], correctIndex:0, points:10 },
+      { text:'🌐 ¿Qué tecnología usan los planetarios modernos para mostrar imágenes en la cúpula?', options:['Fulldome 360°','Televisión','Proyector plano','Holograma'], correctIndex:0, points:10 },
+      { text:'🗓️ ¿En qué año la Fiesta Grande de Chiapa de Corzo (Parachicos) fue reconocida por la UNESCO?', options:['2001','2010','2015','2020'], correctIndex:1, points:10 },
+      { text:'🗣️ Además del tsotsil, ¿qué otra lengua maya se habla mucho en Chiapas?', options:['Tseltal','Zapoteco','Rarámuri','Mixteco'], correctIndex:0, points:10 },
+      { text:'🦚 Ave que se consideraba extinta en Chiapas, con plumas largas de color turquesa:', options:['Guacamaya','Quetzal','Tucán','Loro'], correctIndex:1, points:10 },
+      { text:'🐆 ¿Qué significa la palabra "BALAM" en español?', options:['Puma','Jaguar','León','Tigre'], correctIndex:1, points:10 },
+    ];
 
     const NUM_QUESTIONS = 6;
     const shuffle = a => a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
     const QUESTIONS = shuffle(BANK).slice(0, NUM_QUESTIONS);
 
     /* =================== Clases =================== */
-    class SoundFX {
+    class SoundFX{
       constructor(toggleEl){ this.toggleEl = toggleEl; this.ctx = null; }
       beep(freq=880, dur=0.15, type='sine', vol=0.08){
         if(!this.toggleEl.checked) return;
@@ -365,7 +324,7 @@
       wrong(){ this.beep(200,.18,'sawtooth',.07); }
     }
 
-    class Confetti {
+    class Confetti{
       constructor(canvas){
         this.canvas = canvas; this.ctx = canvas.getContext('2d');
         this.pieces=[]; this.resize(); addEventListener('resize', ()=>this.resize());
@@ -374,10 +333,7 @@
       resize(){ this.canvas.width = innerWidth; this.canvas.height = innerHeight; }
       launch(n=120){
         for(let i=0;i<n;i++){
-          this.pieces.push({
-            x: Math.random()*this.canvas.width, y:-10, r:4+Math.random()*4,
-            vy:2+Math.random()*3, vx:-2+Math.random()*4, rot:Math.random()*Math.PI*2
-          });
+          this.pieces.push({ x: Math.random()*this.canvas.width, y:-10, r:4+Math.random()*4, vy:2+Math.random()*3, vx:-2+Math.random()*4, rot:Math.random()*Math.PI*2 });
         }
       }
       loop(){
@@ -386,7 +342,6 @@
         this.pieces.forEach(p=>{
           p.x+=p.vx; p.y+=p.vy; p.rot+=0.05;
           ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
-          /* Colores marca: turquesa + fucsia + acentos */
           const palette = ['#06b6d4','#0891b2','#d946ef','#a21caf','#22d3ee','#f0abfc'];
           ctx.fillStyle = palette[(p.r|0) % palette.length];
           ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2); ctx.restore();
@@ -395,7 +350,7 @@
       }
     }
 
-    class PrizeManager {
+    class PrizeManager{
       constructor(){
         this.PRIZES = [
           { key:'museo',      title:'MUCH · Museo',      label:'Entrada al Museo MUCH',                    lugar:'Museo Chiapas (MUCH)', emoji:'🏛️' },
@@ -406,21 +361,17 @@
       random(){ return this.PRIZES[Math.floor(Math.random()*this.PRIZES.length)]; }
     }
 
-    class TicketManager {
+    class TicketManager{
       constructor({modalEl, folioEl, dateEl, nameEl, nickEl, saveBtn, printBtn, titleEls, accessEl, ubicacionEl, headerLogoEl}){
         this.modal = new bootstrap.Modal(modalEl);
         this.folioEl=folioEl; this.dateEl=dateEl; this.nameEl=nameEl;
         this.nickEl=nickEl; this.saveBtn=saveBtn; this.printBtn=printBtn;
-        this.titleEls = titleEls;
-        this.accessEl = accessEl;
-        this.ubicacionEl = ubicacionEl;
-        this.headerLogoEl = headerLogoEl;
+        this.titleEls = titleEls; this.accessEl = accessEl; this.ubicacionEl = ubicacionEl; this.headerLogoEl = headerLogoEl;
         this.currentPrize = null;
 
         this.saveBtn.addEventListener('click', ()=> this.updateName());
         this.printBtn.addEventListener('click', ()=> window.print());
       }
-
       setPrize(prize){
         this.currentPrize = prize;
         const folio = 'MUCH-' + Math.random().toString(36).substring(2,8).toUpperCase();
@@ -433,22 +384,15 @@
         this.ubicacionEl.innerHTML = `<strong>Ubicación:</strong> ${prize.lugar}`;
         if (this.headerLogoEl) this.headerLogoEl.textContent = prize.emoji;
       }
-
-      updateName(){
-        this.nameEl.textContent = this.nickEl.value.trim() ? this.nickEl.value.trim() : 'Visitante';
-      }
-
-      open(){
-        if(!this.currentPrize) return;
-        this.updateName();
-        this.modal.show();
-      }
+      updateName(){ this.nameEl.textContent = this.nickEl.value.trim() ? this.nickEl.value.trim() : 'Visitante'; }
+      open(){ if(!this.currentPrize) return; this.updateName(); this.modal.show(); }
     }
 
-    class UIManager {
+    class UIManager{
       constructor({elements, sound, confetti, ticket, prizeMgr}){
         this.e = elements; this.sound = sound; this.confetti = confetti; this.ticket = ticket; this.prizeMgr = prizeMgr;
-        this.state = { idx:0, selected:null, points:0, correct:0, locked:false, answers:[] };
+        this.state = { idx:0, selected:null, points:0, correct:0, locked:false, answers:[] }; // empieza en 1ª pregunta
+
         this.e.pillSala.textContent = `Sala: ${SALA}`;
         this.e.qTotal.textContent = QUESTIONS.length.toString();
         this.bind(); this.render(); this.clock();
@@ -590,7 +534,13 @@
       headerLogoEl:document.getElementById('logoEmoji'),
     });
 
-    new UIManager({ elements, sound, confetti, ticket, prizeMgr });
+    // Inicio: muestra bienvenida; al click arranca el quiz (1ª pregunta)
+    document.getElementById('startBtn').addEventListener('click', (e)=>{
+      e.preventDefault();
+      document.getElementById('welcome').classList.add('hidden');
+      document.getElementById('quizShell').classList.remove('hidden');
+      new UIManager({ elements, sound, confetti, ticket, prizeMgr });
+    });
   </script>
 </body>
 </html>
