@@ -58,20 +58,31 @@
       filter: saturate(1.05) contrast(1.05) brightness(.95);
       will-change: opacity, transform;
     }
-    @media (prefers-contrast: more){ .bg-stack::before{ opacity: .25; } }
+    /* Mejor manejo del alto en móviles y centrado amable */
+@media (max-width: 576px){
+  body{
+    min-height: 100svh;         /* en lugar de 100vh */
+    align-items: flex-start;     /* evita “centrado vertical rígido” */
+    padding-block: 16px;
+  }
+  .welcome,
+  .app-card{
+    margin-inline: auto;         /* mantiene centrado horizontal */
+  }
+}
+
 
     /* ====== Layout global ====== */
-   body {
-  margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0ea5b9, #ec4899, #38bdf8, #f472b6);
-  background-size: 400% 400%;
-  animation: gradientMove 25s ease infinite;
-  position: relative;
-  overflow-x: hidden;   /* solo bloquea scroll lateral */
-  overflow-y: auto;     /* deja que se pueda deslizar hacia abajo */
-}
+    body{
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0ea5b9, #ec4899, #38bdf8, #f472b6);
+      background-size: 400% 400%;
+      animation: gradientMove 25s ease infinite;
+      position: relative; overflow: hidden;
+    }
     @keyframes gradientMove{ 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
 
     .app-card{ z-index: 1; }
